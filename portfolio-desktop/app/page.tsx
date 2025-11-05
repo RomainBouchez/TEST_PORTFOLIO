@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import DesktopIcon from '@/components/DesktopIcon';
 import ErrorModal from '@/components/ErrorModal';
-import ProjectWindow from '@/components/ProjectWindow_5';
+import ProjectWindow from '@/components/ProjectWindow_2';
 import AboutModal from '@/components/AboutModal';
 import Dock from '@/components/Dock';
 import MenuBar from '@/components/MenuBar';
@@ -20,7 +20,7 @@ interface OpenWindow {
   position: { x: number, y: number } | null;
 }
 
-const Z_INDEX_BASE = 10;
+const Z_INDEX_BASE = 100;
 const WINDOW_WIDTH = 896;
 const WINDOW_MAX_WIDTH_VW = 48;
 const GAP = 25;

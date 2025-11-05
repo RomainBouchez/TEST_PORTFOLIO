@@ -66,23 +66,33 @@ export default function AboutModal({ onClose, initialPosition = { x: 150, y: 150
           className="relative bg-[#E8E8E8] px-3 py-2.5 flex items-center gap-2 cursor-move border-b border-[#D1D1D6]"
           onMouseDown={handleHeaderMouseDown}
         >
-          {/* Traffic light buttons */}
-          <div className="flex items-center gap-2 group/buttons">
+
+        <div className="flex items-center gap-2">
+          {/* Bouton Fermer */}
             <button
               onClick={onClose}
-              className="w-3 h-3 rounded-full bg-[#FF5F56] hover:bg-[#FF3B30] transition-colors shadow-sm border border-[#E0443E] group-hover/buttons:before:content-['×'] before:text-[#8B0000] before:text-xs before:font-semibold before:flex before:items-center before:justify-center before:w-full before:h-full"
+              className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#FF5F56] p-0 transition-colors hover:bg-[#FF3B30]" /* On enlève "relative" ici */
               aria-label="Close"
-            />
+            >
+                {/* Pseudo-élément pour étendre la zone de clic */}
+                <span className="absolute -inset-3"></span>
+              </button>
+            </div>
+
+            {/* Bouton Minimiser */}
             <button
-              className="w-3 h-3 rounded-full bg-[#FFBD2E] hover:bg-[#FFB302] transition-colors shadow-sm border border-[#DEA123] group-hover/buttons:before:content-['−'] before:text-[#8B5A00] before:text-xs before:font-bold before:flex before:items-center before:justify-center before:w-full before:h-full"
+              className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#FFBD2E] p-0 transition-colors hover:bg-[#FFB302]"
               aria-label="Minimize"
-            />
+            >
+            </button>
+
+            {/* Bouton Agrandir */}
             <button
-              className="w-3 h-3 rounded-full bg-[#27C93F] hover:bg-[#1AAD34] transition-colors shadow-sm border border-[#12AA2C] group-hover/buttons:before:content-['⤢'] before:text-[#006400] before:text-[10px] before:font-bold before:flex before:items-center before:justify-center before:w-full before:h-full before:rotate-45"
+              className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#27C93F] p-0 transition-colors hover:bg-[#1AAD34]"
               aria-label="Maximize"
-            />
+            >
+            </button>
           </div>
-        </div>
 
         {/* Toolbar */}
         <div className="bg-[#F5F5F7] px-4 py-2 flex items-center gap-2 border-b border-[#D1D1D6]">
@@ -211,13 +221,13 @@ export default function AboutModal({ onClose, initialPosition = { x: 150, y: 150
               {/* Bio Content */}
               <div className="space-y-6 text-[15px] leading-relaxed text-gray-800">
                 <p>
-                  Je suis <strong>Romain Bouchez</strong>, étudiant en école d'ingénieur à l'<strong>ESIEA</strong>. Passionné par la sécurité informatique et le développement, je suis actuellement à la recherche d'une alternance pour approfondir mes compétences et contribuer à des projets innovants.
+                  Je suis <strong>Romain Bouchez</strong>, étudiant en école d'ingénieur à l'<strong>ESIEA</strong> avec une forte appétence pour l'<strong>Intelligence Artificielle</strong> et le <strong>Machine Learning</strong>. Mon parcours académique m'a permis d'acquérir de solides bases en programmation (Python, C), en algorithmique et en analyse de données.
                 </p>
                 <p>
-                  En dehors du monde de la tech, je suis passionné par le sport, notamment la musculation, qui m'aide à repousser mes limites autant mentalement que physiquement.
+                  Fasciné par la capacité des modèles à extraire des tendances et à automatiser des tâches complexes, je souhaite orienter ma carrière vers l'ingénierie IA. Je suis actuellement à la recherche d'un stage stimulant où je pourrais mettre en pratique mes connaissances et contribuer à des projets ayant un impact réel.
                 </p>
                 <p>
-                  Mon objectif ? Devenir un expert en <strong>cybersécurité</strong> et participer activement à la protection des infrastructures numériques.
+                  Curieux et autonome, mon objectif est de rejoindre une équipe innovante pour développer des solutions intelligentes, tout en continuant à apprendre et à repousser les limites de mes compétences techniques.
                 </p>
               </div>
             </div>

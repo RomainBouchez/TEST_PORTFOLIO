@@ -104,22 +104,36 @@ export default function ProjectWindow_5({ project, onClose, onFocus, zIndex, ini
         className="relative bg-gradient-to-b from-gray-50/95 to-gray-100/95 backdrop-blur-2xl px-4 py-2.5 flex items-center gap-2 cursor-move border-b border-gray-200/60"
         onMouseDown={handleHeaderMouseDown}
       >
-        {/* Traffic light buttons */}
+      <div className="flex items-center gap-2 p-4">
+        {/* Boutons feux de signalisation */}
         <div className="flex items-center gap-2">
+          {/* Bouton Fermer avec zone cliquable étendue */}
+          <div className="relative">
+            <button
+              onClick={onClose}
+              className="group relative flex h-3 w-3 items-center justify-center rounded-full bg-[#FF5F56] p-0 transition-colors hover:bg-[#FF3B30]"
+              aria-label="Close"
+            >
+              {/* Pseudo-élément pour étendre la zone de clic */}
+              <span className="absolute -inset-3"></span>
+            </button>
+          </div>
+
+          {/* Bouton Minimiser */}
           <button
-            onClick={onClose}
-            className="w-3 h-3 rounded-full bg-[#FF5F56] hover:bg-[#FF3B30] transition-colors"
-            aria-label="Close"
-          />
-          <button
-            className="w-3 h-3 rounded-full bg-[#FFBD2E] hover:bg-[#FFB302] transition-colors"
+            className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#FFBD2E] p-0 transition-colors hover:bg-[#FFB302]"
             aria-label="Minimize"
-          />
+          >
+          </button>
+
+          {/* Bouton Agrandir */}
           <button
-            className="w-3 h-3 rounded-full bg-[#27C93F] hover:bg-[#1AAD34] transition-colors"
+            className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#27C93F] p-0 transition-colors hover:bg-[#1AAD34]"
             aria-label="Maximize"
-          />
+          >
+          </button>
         </div>
+      </div>
         <span className="text-[13px] font-semibold text-gray-700 flex-1 text-center pr-16">{project.title}</span>
       </div>
 
@@ -175,7 +189,7 @@ export default function ProjectWindow_5({ project, onClose, onFocus, zIndex, ini
             </div>
           </div>
 
-          {/* ... Reste du contenu (inchangé) ... */}
+          
           <div className="border-t border-gray-200 my-8"></div>
           <div className="max-w-2xl mx-auto px-8 text-center"><p className="text-lg text-gray-700 leading-relaxed">{project.description}</p></div>
           <div className="border-t border-gray-200 my-12"></div>
@@ -190,7 +204,6 @@ export default function ProjectWindow_5({ project, onClose, onFocus, zIndex, ini
               ))}
             </div>
           </div>
-          {/* ... etc ... */}
         </motion.div>
       </div>
     </motion.div>

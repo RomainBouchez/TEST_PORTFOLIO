@@ -85,6 +85,7 @@ export default function Desktop() {
               onClose={() => handleCloseWindow(window.id)}
               onFocus={() => handleFocusWindow(window.id)}
               zIndex={window.zIndex}
+              initialPosition={null}
             />
           );
         }

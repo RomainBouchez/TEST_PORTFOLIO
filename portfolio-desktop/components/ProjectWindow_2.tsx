@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Project } from '@/lib/projects';
 
+
+
 interface ProjectWindow2Props {
   project: Project;
   onClose: () => void;
@@ -23,17 +25,34 @@ export default function ProjectWindow_2({ project, onClose, onFocus, zIndex, ini
     if (initialPosition) {
       newPos = initialPosition;
     } else if (windowRef.current) {
+      // Mesurer la fenêtre une fois qu'elle est dans le DOM
       const { offsetWidth, offsetHeight } = windowRef.current;
+      // Calculer la position centrée
       newPos.x = (window.innerWidth - offsetWidth) / 2;
-      newPos.y = (window.innerHeight - offsetHeight) / 3;
+      newPos.y = (window.innerHeight - offsetHeight) / 3; // Positionné à 1/3 du haut de l'écran
     }
+    // Mettre à jour la position pour la rendre visible
     setPosition(newPos);
-  }, [initialPosition]);
+  }, [initialPosition]); // Se déclenche une seule fois au montage
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+      if (isDragging && windowRef.current) {
+        const windowWidth = windowRef.current.offsetWidth;
+        const windowHeight = windowRef.current.offsetHeight;
+        const isMobile = window.innerWidth < 640;
+        const dockHeight = isMobile ? 70 : 85; // Space reserved for dock (reduced padding)
+        const menuBarHeight = 40; // Menu bar at top
+
+        // Calculate new position
+        let newX = e.clientX - dragStart.x;
+        let newY = e.clientY - dragStart.y;
+
+        // Constrain to screen boundaries
+        newX = Math.max(0, Math.min(newX, window.innerWidth - windowWidth));
+        newY = Math.max(menuBarHeight, Math.min(newY, window.innerHeight - windowHeight - dockHeight));
+
+        setPosition({ x: newX, y: newY });
       }
     };
     const handleMouseUp = () => setIsDragging(false);
@@ -46,7 +65,8 @@ export default function ProjectWindow_2({ project, onClose, onFocus, zIndex, ini
   }, [isDragging, dragStart]);
 
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('.traffic-lights-container')) return;
+    // La vérification a été mise à jour pour correspondre à la nouvelle structure des boutons
+    if ((e.target as HTMLElement).closest('.relative > button')) return;
     if (windowRef.current) {
       const rect = windowRef.current.getBoundingClientRect();
       setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -58,7 +78,7 @@ export default function ProjectWindow_2({ project, onClose, onFocus, zIndex, ini
     <div
       ref={windowRef}
       onMouseDown={onFocus}
-      className="bg-white rounded-xl overflow-hidden w-[1000px] max-w-[90vw] h-[650px] flex flex-col fixed shadow-2xl"
+      className="bg-white rounded-xl overflow-hidden w-[1000px] max-w-[90vw] h-[650px] flex flex-col fixed shadow-2xl transition-opacity duration-300"
       style={{
         left: position.x,
         top: position.y,
@@ -72,14 +92,38 @@ export default function ProjectWindow_2({ project, onClose, onFocus, zIndex, ini
         className="relative bg-gradient-to-b from-gray-50/95 to-gray-100/95 backdrop-blur-2xl px-4 py-2.5 flex items-center gap-2 cursor-move border-b border-gray-200/60"
         onMouseDown={handleHeaderMouseDown}
       >
-        <div className="flex items-center gap-2 group/buttons cursor-pointer traffic-lights-container" onClick={onClose}>
-          <div className="w-3 h-3 rounded-full bg-[#FF5F56] before:content-['×'] before:text-transparent group-hover/buttons:before:text-[#8B0000] before:font-bold before:flex before:items-center before:justify-center" />
-          <div className="w-3 h-3 rounded-full bg-[#FFBD2E] before:content-['−'] before:text-transparent group-hover/buttons:before:text-[#8B5A00] before:font-bold before:flex before:items-center before:justify-center" />
-          <div className="w-3 h-3 rounded-full bg-[#27C93F] before:content-['⤢'] before:text-transparent group-hover/buttons:before:text-[#006400] before:text-[10px] before:font-bold before:flex before:items-center before:justify-center" />
+        <div className="flex items-center gap-2 p-4">
+        {/* Boutons feux de signalisation */}
+        <div className="flex items-center gap-2">
+          {/* Bouton Fermer avec zone cliquable étendue */}
+          <div className="relative">
+            <button
+              onClick={onClose}
+              className="group relative flex h-3 w-3 items-center justify-center rounded-full bg-[#FF5F56] p-0 transition-colors hover:bg-[#FF3B30]"
+              aria-label="Close"
+            >
+              {/* Pseudo-élément pour étendre la zone de clic */}
+              <span className="absolute -inset-3"></span>
+            </button>
+          </div>
+
+          {/* Bouton Minimiser */}
+          <button
+            className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#FFBD2E] p-0 transition-colors hover:bg-[#FFB302]"
+            aria-label="Minimize"
+          >
+          </button>
+
+          {/* Bouton Agrandir */}
+          <button
+            className="group flex h-3 w-3 items-center justify-center rounded-full bg-[#27C93F] p-0 transition-colors hover:bg-[#1AAD34]"
+            aria-label="Maximize"
+          >
+          </button>
         </div>
+      </div>
         <span className="text-[13px] font-semibold text-gray-700 flex-1 text-center pr-16">{project.title}</span>
       </div>
-
       {/* Finder-style Column View */}
       <div className="flex flex-1 overflow-hidden">
         {/* Column 1: Details (25%) */}

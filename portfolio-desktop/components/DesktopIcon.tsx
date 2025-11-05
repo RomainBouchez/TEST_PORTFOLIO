@@ -74,7 +74,7 @@ export default function DesktopIcon({ project, onClick, initialPosition }: Deskt
       onDragStart={handleDragStart}
       onDrag={handleDrag}
       onClick={handleClick}
-      className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex flex-col items-center justify-start cursor-pointer group absolute"
+      className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex flex-col items-center justify-start cursor-pointer group absolute z-10"
       initial={{ x: initialPosition.x, y: initialPosition.y, opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.1, duration: 0.3 }}
@@ -86,19 +86,12 @@ export default function DesktopIcon({ project, onClick, initialPosition }: Deskt
             {icon}
           </div>
         ) : (
-          <div className="relative w-full h-full transition-transform duration-200 group-hover:scale-105">
-            {/* Icon with shadow that follows the rounded shape */}
-            <div className="absolute inset-0 rounded-lg sm:rounded-xl shadow-lg"
-                 style={{
-                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
-                   filter: 'blur(0px)'
-                 }}
-            />
+          <div className="relative w-full h-full transition-transform duration-200 group-hover:scale-105 drop-shadow-lg">
             <Image
               src={icon}
               alt={title}
               fill
-              className="rounded-lg sm:rounded-xl pointer-events-none object-cover relative z-10"
+              className="pointer-events-none object-contain"
               sizes="(max-width: 640px) 48px, (max-width: 768px) 64px, 80px"
               quality={90}
             />
@@ -106,7 +99,7 @@ export default function DesktopIcon({ project, onClick, initialPosition }: Deskt
             {/* Overlay with CSS mask for "In Progress" status */}
             {status === 'In Progress' && (
               <div
-                className="progress-mask absolute inset-0 bg-black/60 rounded-lg sm:rounded-xl pointer-events-none z-20"
+                className="progress-mask absolute inset-0 bg-black/60 pointer-events-none z-20"
               />
             )}
           </div>
