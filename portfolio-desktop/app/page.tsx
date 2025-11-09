@@ -179,34 +179,64 @@ export default function Home() {
 
       // Icon size based on screen size
       const iconSize = isMobile ? 64 : isTablet ? 80 : 96;
-      const startY = isMobile ? 60 : 80;
+      const menuBarHeight = isMobile ? 60 : 80;
+      const dockHeight = isMobile ? 90 : 100; // Reserve space for dock
+      const padding = 20; // Minimum padding from edges
 
-      // Force 4 icons per row on mobile, calculate for other screens
-      let iconsPerRow: number;
-      if (isMobile) {
-        iconsPerRow = 4; // Always 4 icons per row on mobile
-      } else {
-        const edgePadding = 20;
-        const availableWidth = window.innerWidth - (edgePadding * 2);
-        iconsPerRow = Math.floor(availableWidth / (iconSize + 24));
-      }
+      // Available area for placing icons
+      const availableWidth = window.innerWidth - (padding * 2) - iconSize;
+      const availableHeight = window.innerHeight - menuBarHeight - dockHeight - iconSize;
 
-      // Calculate spacing to make icons span from left to right edge
-      const totalIconWidth = iconSize * iconsPerRow;
-      const availableSpaceForGaps = window.innerWidth - totalIconWidth;
-      const gap = availableSpaceForGaps / (iconsPerRow + 1); // Equal spacing including edges
+      // Minimum spacing between icons to prevent overlap
+      const minSpacing = iconSize + (isMobile ? 20 : 30);
 
       const positions = [];
-      for (let i = 0; i < 12; i++) { // Support up to 12 icons
-        const row = Math.floor(i / iconsPerRow);
-        const col = i % iconsPerRow;
+      const maxAttempts = 100; // Maximum attempts to place each icon
 
-        // Position icons with calculated gap, starting from left edge
-        const x = gap + col * (iconSize + gap);
-        const y = startY + row * (iconSize + gap);
+      // Helper function to check if a position overlaps with existing positions
+      const isOverlapping = (newPos: { x: number; y: number }, existingPositions: { x: number; y: number }[]) => {
+        return existingPositions.some(pos => {
+          const distance = Math.sqrt(
+            Math.pow(newPos.x - pos.x, 2) + Math.pow(newPos.y - pos.y, 2)
+          );
+          return distance < minSpacing;
+        });
+      };
 
-        positions.push({ x, y });
+      // Generate random positions for up to 12 icons
+      for (let i = 0; i < 12; i++) {
+        let attempts = 0;
+        let position = { x: 0, y: 0 };
+        let validPosition = false;
+
+        while (attempts < maxAttempts && !validPosition) {
+          // Generate random position within available area
+          position = {
+            x: padding + Math.random() * availableWidth,
+            y: menuBarHeight + Math.random() * availableHeight
+          };
+
+          // Check if this position overlaps with existing positions
+          if (!isOverlapping(position, positions)) {
+            validPosition = true;
+          }
+          attempts++;
+        }
+
+        // If we couldn't find a non-overlapping position, use a fallback grid position
+        if (!validPosition) {
+          const fallbackIconsPerRow = isMobile ? 4 : 6;
+          const row = Math.floor(i / fallbackIconsPerRow);
+          const col = i % fallbackIconsPerRow;
+          position = {
+            x: padding + col * (iconSize + 40),
+            y: menuBarHeight + row * (iconSize + 40)
+          };
+        }
+
+        positions.push(position);
       }
+
       return positions;
     };
 

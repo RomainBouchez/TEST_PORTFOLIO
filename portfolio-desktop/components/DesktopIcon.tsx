@@ -15,9 +15,8 @@ export default function DesktopIcon({ project, onClick, initialPosition }: Deskt
   if (!project) return null;
   const { title, icon, status } = project;
 
-  const dragStartPos = useRef({ x: 0, y: 0 });
-  const isDragging = useRef(false);
   const motionRef = useRef<any>(null);
+  const hasDragged = useRef(false);
 
   // Check if icon is an emoji (short string, typically 1-2 characters) or an image path
   const isEmoji = icon.length <= 4 && !icon.startsWith('/');
@@ -29,33 +28,37 @@ export default function DesktopIcon({ project, onClick, initialPosition }: Deskt
     }
   }, [initialPosition.x, initialPosition.y]);
 
-  const handleClick = () => {
-    // Only trigger onClick if the icon wasn't dragged significantly
-    if (!isDragging.current) {
+  const handleTap = () => {
+    // Only open if no drag occurred
+    // onTap can sometimes fire after a small drag, so we double-check
+    if (!hasDragged.current) {
       onClick();
     }
+    // Reset after tap
+    hasDragged.current = false;
   };
 
-  const handleDragStart = (event: MouseEvent | TouchEvent | PointerEvent) => {
-    isDragging.current = false;
-    const clientX = 'clientX' in event ? event.clientX : (event as TouchEvent).touches[0].clientX;
-    const clientY = 'clientY' in event ? event.clientY : (event as TouchEvent).touches[0].clientY;
-    dragStartPos.current = { x: clientX, y: clientY };
+  const handleDragStart = () => {
+    hasDragged.current = false;
   };
 
-  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent) => {
-    const clientX = 'clientX' in event ? event.clientX : (event as TouchEvent).touches[0].clientX;
-    const clientY = 'clientY' in event ? event.clientY : (event as TouchEvent).touches[0].clientY;
-
-    // Calculate distance moved from drag start
-    const deltaX = Math.abs(clientX - dragStartPos.current.x);
-    const deltaY = Math.abs(clientY - dragStartPos.current.y);
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    // If moved more than 5 pixels, consider it a drag
-    if (distance > 5) {
-      isDragging.current = true;
+  const handleDrag = (_event: MouseEvent | TouchEvent | PointerEvent, info: any) => {
+    // Check if the drag distance exceeds the threshold
+    const distance = Math.sqrt(
+      Math.pow(info.offset.x, 2) + Math.pow(info.offset.y, 2)
+    );
+    
+    // If moved more than 3 pixels, consider it a drag
+    if (distance > 3) {
+      hasDragged.current = true;
     }
+  };
+
+  const handleDragEnd = () => {
+    // Reset after a delay to ensure onTap doesn't fire
+    setTimeout(() => {
+      hasDragged.current = false;
+    }, 100);
   };
 
   return (
@@ -82,7 +85,8 @@ export default function DesktopIcon({ project, onClick, initialPosition }: Deskt
       }}
       onDragStart={handleDragStart}
       onDrag={handleDrag}
-      onClick={handleClick}
+      onDragEnd={handleDragEnd}
+      onTap={handleTap}
       className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 flex flex-col items-center justify-start cursor-pointer group absolute z-10"
       initial={{ x: initialPosition.x, y: initialPosition.y, opacity: 0, scale: 0.8 }}
       animate={{ x: initialPosition.x, y: initialPosition.y, opacity: 1, scale: 1 }}

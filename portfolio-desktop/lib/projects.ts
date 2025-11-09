@@ -2,12 +2,12 @@ export interface Project {
   id: string;
   title: string;
   subtitle: string;
-  icon: string; // Icon for the app (emoji or image path)
-  image: string; // Chemin depuis le dossier /public (window presentation)
+  icon: string;
+  image: string;
   technologies: string[];
   description: string;
   features: {
-    icon: string; // Emoji
+    icon: string;
     title: string;
     description: string;
   }[];
@@ -151,6 +151,23 @@ export const projects: Project[] = [
       { icon: '▸', title: 'Stockfish Integration', description: 'Powered by world-class chess engine' },
       { icon: '▸', title: 'Graphical Interface', description: 'User-friendly chess board with Pygame' },
       { icon: '▸', title: 'Rules Validation', description: 'Complete chess rules enforcement' },
+    ],
+    email: 'bouchez@et.esiea.fr',
+    status: 'In Progress',
+  },
+  {
+    id: 'iads-project',
+    title: 'Projet Fil Rouge IADS',
+    subtitle: 'Projet fil rouge sur 2 ans pour la majeure IADS (Intelligence Artificielle et Data Science) à l\'ESIEA.',
+    icon: '/img/IADS/icon_IADS.png',
+    image: '/img/IADS/iads-main.svg',
+    technologies: ['Python', 'Machine Learning', 'Data Science', 'AI', 'Deep Learning'],
+    description: 'Projet fil rouge de 2 ans réalisé dans le cadre de la majeure IADS (Intelligence Artificielle et Data Science) à l\'ESIEA. Ce projet permet d\'appliquer les concepts appris en intelligence artificielle et data science sur un cas d\'usage réel et concret.',
+    features: [
+      { icon: '▸', title: 'Analyse de Données', description: 'Traitement et analyse de données complexes pour extraire des insights' },
+      { icon: '▸', title: 'Machine Learning', description: 'Développement de modèles de machine learning pour résoudre des problèmes réels' },
+      { icon: '▸', title: 'Intelligence Artificielle', description: 'Implémentation d\'algorithmes d\'IA avancés' },
+      { icon: '▸', title: 'Projet Long Terme', description: 'Développement sur 2 ans permettant une approche approfondie et méthodique' },
     ],
     email: 'bouchez@et.esiea.fr',
     status: 'In Progress',

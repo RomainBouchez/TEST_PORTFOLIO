@@ -11,11 +11,23 @@ export default function AboutModal({ onClose, initialPosition = { x: 150, y: 150
   const [position, setPosition] = useState(initialPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [hasMoved, setHasMoved] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
+  const initialMousePosRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
+      if (isDragging && windowRef.current) {
+        // Calculate movement distance from initial mouse position
+        const deltaX = Math.abs(e.clientX - initialMousePosRef.current.x);
+        const deltaY = Math.abs(e.clientY - initialMousePosRef.current.y);
+        
+        // If moved more than 5 pixels, consider it a drag
+        if (deltaX > 5 || deltaY > 5) {
+          setHasMoved(true);
+        }
+        
+        // Update window position
         setPosition({
           x: e.clientX - dragStart.x,
           y: e.clientY - dragStart.y,
@@ -25,6 +37,10 @@ export default function AboutModal({ onClose, initialPosition = { x: 150, y: 150
 
     const handleMouseUp = () => {
       setIsDragging(false);
+      // Reset after a short delay to allow click detection
+      setTimeout(() => {
+        setHasMoved(false);
+      }, 150);
     };
 
     if (isDragging) {
@@ -39,20 +55,59 @@ export default function AboutModal({ onClose, initialPosition = { x: 150, y: 150
   }, [isDragging, dragStart]);
 
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
+    // Stop propagation to prevent backdrop click
+    e.stopPropagation();
     if (windowRef.current) {
       const rect = windowRef.current.getBoundingClientRect();
+      initialMousePosRef.current = { x: e.clientX, y: e.clientY };
       setDragStart({
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
       });
       setIsDragging(true);
+      setHasMoved(false);
     }
   };
 
+  const handleBackdropMouseDown = (e: React.MouseEvent) => {
+    // Only close if clicking directly on backdrop (not on window) and not dragging
+    if (e.target === e.currentTarget && !isDragging) {
+      // Use a small delay to check if this was a click (not a drag start)
+      const mouseDownTime = Date.now();
+      const mouseDownX = e.clientX;
+      const mouseDownY = e.clientY;
+      
+      const handleMouseUp = (upEvent: MouseEvent) => {
+        const mouseUpTime = Date.now();
+        const deltaX = Math.abs(upEvent.clientX - mouseDownX);
+        const deltaY = Math.abs(upEvent.clientY - mouseDownY);
+        const timeDiff = mouseUpTime - mouseDownTime;
+        
+        // Only close if it was a quick click (not a drag) on the backdrop
+        if (timeDiff < 300 && deltaX < 5 && deltaY < 5 && upEvent.target === e.target) {
+          onClose();
+        }
+        
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+      
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+  };
+
+  const handleWindowMouseDown = (e: React.MouseEvent) => {
+    // Stop propagation to prevent backdrop from closing when interacting with window
+    e.stopPropagation();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onMouseDown={handleBackdropMouseDown}
+    >
       <div
         ref={windowRef}
+        onMouseDown={handleWindowMouseDown}
         className="bg-[#F5F5F7] rounded-xl overflow-hidden max-w-5xl w-full max-h-[90vh] flex flex-col"
         style={{
           position: 'fixed',
